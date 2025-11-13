@@ -32,7 +32,7 @@ services:
       - SUPPORT_EMAIL=support@sunriseing.dev
       - SMTP_HOST=smtp.ionos.de
       - SMTP_PORT=587
-      - SMTP_SECURE=true
+      - SMTP_SECURE=false
       - SMTP_USER=noreply@sunriseing.dev
       - SMTP_PWD=fWwZsyghhc8VnBzI2Qs!ns9u6e4u@YbCPUQA3vuo
     networks:
