@@ -27,7 +27,7 @@ services:
       - DATABASE_URL=postgres://rallly:R4llDBP4ss2024!@rallly-db:5432/rallly
       - SECRET_PASSWORD=R4llS3cur3K3y2024!SuperSecretLongPassword!
       - NEXT_PUBLIC_BASE_URL=https://rallly.sunriseing.dev
-      - ALLOWED_EMAILS=
+     # - ALLOWED_EMAILS=
       - NOREPLY_EMAIL=noreply@sunriseing.dev
       - SUPPORT_EMAIL=support@sunriseing.dev
       - SMTP_HOST=smtp.ionos.de
