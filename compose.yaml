@@ -1,0 +1,109 @@
+services:
+  rallly_db:
+    image: postgres:14.2
+    restart: always
+    hostname: rallly-db
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=rallly
+      - POSTGRES_PASSWORD=R4llDBP4ss2024!
+      - POSTGRES_DB=rallly
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rallly"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - newt_talk
+
+  rallly:
+    image: lukevella/rallly:latest
+    restart: always
+    depends_on:
+      - rallly_db
+    hostname: rallly-app
+    environment:
+      - DATABASE_URL=postgres://rallly:R4llDBP4ss2024!@rallly-db:5432/rallly
+      - SECRET_PASSWORD=R4llS3cur3K3y2024!
+      - NEXT_PUBLIC_BASE_URL=https://rallly.sunriseing.dev
+      - ALLOWED_EMAILS=
+      - NOREPLY_EMAIL=noreply@sunriseing.dev
+      - SUPPORT_EMAIL=support@sunriseing.dev
+      - SMTP_HOST=
+      - SMTP_PORT=587
+      - SMTP_SECURE=
+      - SMTP_USER=
+      - SMTP_PWD=
+    networks:
+      - newt_talk
+
+  rallly_stack_anchor:
+    image: registry.k8s.io/pause:3.10
+    container_name: rallly-stack-anchor
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 6M
+    labels:
+      # =============================================================
+      # Homepage Dashboard Configuration
+      # =============================================================
+      - homepage.group=Applications
+      - homepage.name=Rallly
+      - homepage.icon=https://raw.githubusercontent.com/lukevella/rallly/main/public/favicon.ico
+      - homepage.href=https://rallly.sunriseing.dev
+      - homepage.description=Scheduling and collaboration tool for polls and meetings
+
+      # =============================================================
+      # Pangolin Reverse Proxy - Basic Configuration
+      # =============================================================
+      - pangolin.proxy-resources.rallly.name=Rallly
+      - pangolin.proxy-resources.rallly.full-domain=rallly.sunriseing.dev
+      - pangolin.proxy-resources.rallly.protocol=http
+
+      # =============================================================
+      # Pangolin Reverse Proxy - Target Configuration
+      # =============================================================
+      - pangolin.proxy-resources.rallly.targets[0].method=http
+      - pangolin.proxy-resources.rallly.targets[0].hostname=rallly-app
+      - pangolin.proxy-resources.rallly.targets[0].port=3000
+
+      # =============================================================
+      # Pangolin Reverse Proxy - Access Rules & Authentication
+      # =============================================================
+      # IP & Country-based Access Control
+      - pangolin.proxy-resources.rallly.rules[0].action=allow
+      - pangolin.proxy-resources.rallly.rules[0].match=ip
+      - pangolin.proxy-resources.rallly.rules[0].value=37.44.215.125
+
+      - pangolin.proxy-resources.rallly.rules[1].action=allow
+      - pangolin.proxy-resources.rallly.rules[1].match=cidr
+      - pangolin.proxy-resources.rallly.rules[1].value=2a13:7e80:0:200::/64
+
+      - pangolin.proxy-resources.rallly.rules[2].action=allow
+      - pangolin.proxy-resources.rallly.rules[2].match=ip
+      - pangolin.proxy-resources.rallly.rules[2].value=5.83.145.94
+
+      - pangolin.proxy-resources.rallly.rules[3].action=allow
+      - pangolin.proxy-resources.rallly.rules[3].match=cidr
+      - pangolin.proxy-resources.rallly.rules[3].value=2a13:7e80:0:563::/64
+
+      - pangolin.proxy-resources.rallly.rules[4].action=allow
+      - pangolin.proxy-resources.rallly.rules[4].match=ip
+      - pangolin.proxy-resources.rallly.rules[4].value=5.83.145.130
+
+      - pangolin.proxy-resources.rallly.rules[5].action=allow
+      - pangolin.proxy-resources.rallly.rules[5].match=cidr
+      - pangolin.proxy-resources.rallly.rules[5].value=2a13:7e80:0:582::/64
+
+      # SSO Authentication
+      - pangolin.proxy-resources.rallly.auth.sso-enabled=true
+    networks:
+      - newt_talk
+
+networks:
+  newt_talk:
+    external: true
