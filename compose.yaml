@@ -100,7 +100,7 @@ services:
       - pangolin.proxy-resources.rallly.rules[5].value=2a13:7e80:0:582::/64
 
       # SSO Authentication
-      - pangolin.proxy-resources.rallly.auth.sso-enabled=true
+      - pangolin.proxy-resources.rallly.auth.sso-enabled=false
     networks:
       - newt_talk
 
